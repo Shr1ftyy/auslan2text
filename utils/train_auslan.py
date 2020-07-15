@@ -1,10 +1,20 @@
-from tensorflow.keras.models import 
+#!C:/Users/Syeam/AppData/Local/Programs/Python/Python37/python.exe
+# @author Syeam_Bin_Abdullah 
+
+# from tensorflow.keras.models 
+import sys
+sys.path.append(r'../src')
 from model import MobileNet
 import numpy as np
 import cv2
 import argparse
 import os
 
+#Constants
+EPOCHS = 100
+BATCH_SIZE = 3
+
+letters = "ABCDEFGHIJKLMNOP"
 # Parsing Arguments
 parser = argparse.ArgumentParser(description='plays images from a selected TXT_DIR')
 parser.add_argument('img_dir', metavar='-i', type=str, nargs='?', 
@@ -40,8 +50,15 @@ print(imgfiles)
 print(labels)
 print(labels.shape)
 
-imgs = np.array([cv2.imread(img) for img in imgfiles])
-print(img.shape)
+print("Parsing image files...")
+imgs = np.array([cv2.imread(f'{args.img_dir}{img}') for img in imgfiles])/255.0
+print(imgs.shape)
 
+print("Loading Model...")
 model = MobileNet(classes=16)
-model.fit()
+model.compile(optimizer='adam', loss='categorical_crossentropy')
+model.fit(imgs, labels, epochs=EPOCHS, batch_size=BATCH_SIZE)
+
+outputs = model.predict(imgs[:3])
+
+print(f"outputs:\n{[letters(i) for i in outputs]}")
