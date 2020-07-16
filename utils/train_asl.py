@@ -8,8 +8,15 @@
 # from tensorflow.keras.models 
 import sys
 sys.path.append(r'../src')
-from model import MobileNet
+# from model import MobileNet
+import tensorflow as tf
+tf.executing_eagerly()
+from tensorflow.keras.applications.mobilenet import MobileNet
+gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.3)
+sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
+from tensorflow.keras import Sequential as Seq
 from sklearn.preprocessing import LabelBinarizer
+import tensorflow.keras.layers as layers
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -18,11 +25,12 @@ import argparse
 import os
 
 #Constants
-EPOCHS = 100
+EPOCHS = 20
 BATCH_SIZE = 32
 CLASSES = 26
 
 letters = "ABCDEFGHIKLMNOPQRSTUVWXY" # Js and Zs are not in this dataset, lol
+# letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 # Parsing Arguments
 # parser = argparse.ArgumentParser(description='Script for training ASL Recognition Model')
 # parser.add_argument('dir', metavar='-i', type=str, nargs='?', 
@@ -94,7 +102,37 @@ print(x_train.shape)
 #         k += 1
 #     plt.tight_layout()   
 
-model = MobileNet(classes=CLASSES, idx="channels_last")
+# plt.show()
+
+# shape = (1024, 1, 1)
+# model = MobileNet(classes=CLASSES, include_top=False)
+
+# x = model.output
+# x = layers.GlobalAveragePooling2D()(x)
+# x = layers.Reshape(shape, name='reshape_1')(x)
+# x = layers.Dropout(0.3, name='dropout')(x)
+# x = layers.Conv2D(CLASSES, (1, 1),
+#           padding='same',
+#           name='conv_preds')(x)
+# x = layers.Reshape((CLASSES,), name='reshape_2')(x)
+# x = layers.Activation('softmax', name='act_softmax')(x)
+
+model = Seq() 
+model.add(layers.Conv2D(75 , (3,3) , strides = 1 , padding = 'same' , activation = 'relu' , input_shape = (28,28,1)))
+model.add(layers.BatchNormalization())
+model.add(layers.MaxPool2D((2,2) , strides = 2 , padding = 'same'))
+model.add(layers.Conv2D(50 , (3,3) , strides = 1 , padding = 'same' , activation = 'relu'))
+model.add(layers.Dropout(0.2))
+model.add(layers.BatchNormalization())
+model.add(layers.MaxPool2D((2,2) , strides = 2 , padding = 'same'))
+model.add(layers.Conv2D(25 , (3,3) , strides = 1 , padding = 'same' , activation = 'relu'))
+model.add(layers.BatchNormalization())
+model.add(layers.MaxPool2D((2,2) , strides = 2 , padding = 'same'))
+model.add(layers.Flatten())
+model.add(layers.Dense(units = 512 , activation = 'relu'))
+model.add(layers.Dropout(0.3))
+model.add(layers.Dense(units = CLASSES , activation = 'softmax'))
+
 model.compile(optimizer='adam', loss='categorical_crossentropy')
 history = model.fit(x_train, y_train, epochs=EPOCHS, batch_size=BATCH_SIZE)
 print(model.summary())

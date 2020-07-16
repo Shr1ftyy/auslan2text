@@ -9,7 +9,7 @@ from kivy.graphics.texture import Texture
 from kivy.uix.gridlayout import GridLayout 
 from kivy.uix.button import Button
 from kivy.uix.label import Label
-from model import MobileNet
+# from model import MobileNet
 import numpy as np
 import time
 import cv2
@@ -63,7 +63,7 @@ class CamMenu(GridLayout):
         self.add_widget(self.label)
 
         self.button = Button(text="Take Photo", size_hint=(.5,.5))
-        self.button.bind(on_press=self.predict)
+        self.button.bind(on_press=self.save)
         self.add_widget(self.button)
         self.index = 2
 
@@ -72,9 +72,9 @@ class CamMenu(GridLayout):
         self.cam.update(None)
         self.img = self.cam.frame[self.cam.RECTY:self.cam.RECTH+self.cam.RECTY, 
                              self.cam.RECTX:self.cam.RECTW+self.cam.RECTX]
-        print(img.shape)
+        print(self.img.shape)
         self.label.text = "LOL"
-        cv2.imshow("_", img)
+        cv2.imshow("_", self.img)
         cv2.waitKey(0)
         key = input('')
         if key.lower().strip() == 's':
@@ -83,12 +83,12 @@ class CamMenu(GridLayout):
         else:
             pass
 
-    def predict(self, instance):
-        self.img = self.cam.frame[self.cam.RECTY:self.cam.RECTH+self.cam.RECTY, 
-                             self.cam.RECTX:self.cam.RECTW+self.cam.RECTX]
+    # def predict(self, instance):
+    #     self.img = self.cam.frame[self.cam.RECTY:self.cam.RECTH+self.cam.RECTY, 
+    #                          self.cam.RECTX:self.cam.RECTW+self.cam.RECTX]
 
-        pred = str(np.argmax(model.predict(np.array([self.img])/255.0)))
-        self.label.text = pred
+    #     pred = str(np.argmax(model.predict(np.array([self.img])/255.0)))
+    #     self.label.text = pred
 
 
 
@@ -103,7 +103,7 @@ class CamApp(App):
 
 if __name__ == '__main__':
     global model
-    alphabet="ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    model = MobileNet(classes=26, idx="channels_last")
-    model.compile(optimizer='adam', loss="categorical_crossentropy")
+    # alphabet="ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    # model = MobileNet(classes=26, idx="channels_last")
+    # model.compile(optimizer='adam', loss="categorical_crossentropy")
     CamApp().run()
