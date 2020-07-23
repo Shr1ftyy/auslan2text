@@ -5,16 +5,22 @@
 #  - improve conversion loop for converting into one-hot vectors (if possible) 
 #  - implement data augmentation?
 #  - implement implement GAN to generate diverse, synthetic datasets? 
+#  - Look more into LS-HAN 
 
 # from tensorflow.keras.models 
 import sys
 sys.path.append(r'../src')
 # from model import MobileNet
 import tensorflow as tf
-tf.executing_eagerly()
 from tensorflow.keras.applications.mobilenet import MobileNet
-gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.3)
-sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
+
+# gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.3)
+# sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
+configproto = tf.compat.v1.ConfigProto() 
+configproto.gpu_options.allow_growth = True
+sess = tf.compat.v1.Session(config=configproto) 
+tf.compat.v1.keras.backend.set_session(sess)
+
 from tensorflow.keras import Sequential as Seq
 from keras.preprocessing.image import ImageDataGenerator
 from sklearn.preprocessing import LabelBinarizer
@@ -28,17 +34,11 @@ import os
 import seaborn as sns
 
 #Constants
-EPOCHS = 200
+EPOCHS = 20
 BATCH_SIZE = 32
 CLASSES = 25
 
-letters = "ABCDEFGHIKLMNOPQRSTUVWXY" # Js and Zs are not in this dataset, lol
-# letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-# Parsing Arguments
-# parser = argparse.ArgumentParser(description='Script for training ASL Recognition Model')
-# parser.add_argument('dir', metavar='-i', type=str, nargs='?', 
-#         help='directory to get data (in csv, images and labels)')
-# args = parser.parse_args()
+letters = "ABCDEFGHIKLMNOPQRSTUVWXY" # Js and Zs are not in this dataset (since J and K are not static gestures in ASL)
 
 print("Loading training data")
 train_df = pd.read_csv("../train_data/asl/sign_mnist_train/sign_mnist_train.csv")
@@ -85,14 +85,8 @@ for value in y_test:
 
 y_test = np.array(one_k)
 
-
-# label_binarizer = LabelBinarizer()
-# y_train = label_binarizer.fit_transform(y_train)
-# y_test = label_binarizer.fit_transform(y_test)
-
 x_train = train_df.values
 x_test = test_df.values
-
 
 # cv2.imwrite('./original.png', x_train[0].reshape(28,28))
 
@@ -130,6 +124,7 @@ print(x_train.shape)
 # x = layers.Reshape((CLASSES,), name='reshape_2')(x)
 # x = layers.Activation('softmax', name='act_softmax')(x)
 
+# Basic ConvNet
 model = Seq() 
 model.add(layers.Conv2D(75 , (3,3) , strides = 1 , padding = 'same' , activation = 'relu' , input_shape = (28,28,1)))
 model.add(layers.BatchNormalization())
@@ -148,7 +143,7 @@ model.add(layers.Dense(units = CLASSES , activation = 'softmax'))
 
 model.compile(optimizer='adam', loss='categorical_crossentropy')
 history = model.fit(x_train, y_train, epochs=EPOCHS, batch_size=BATCH_SIZE)
-model.save('test.h5')
+model.save('models/convnet100.h5')
 print(model.summary())
 print(history.history)
 

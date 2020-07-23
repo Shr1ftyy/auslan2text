@@ -1,6 +1,10 @@
 #!C:/Users/Syeam/AppData/Local/Programs/Python/Python37/python.exe
 # @author Syeam_Bin_Abdullah 
 
+# BTW, this isn't complete yet, currently focused on 
+# researchign about different approaches to solving this
+# problemm, and testing on ASL dataset :|
+
 # from tensorflow.keras.models 
 import sys
 sys.path.append(r'../src')
@@ -9,6 +13,11 @@ import numpy as np
 import cv2
 import argparse
 import os
+
+configproto = tf.compat.v1.ConfigProto() 
+configproto.gpu_options.allow_growth = True
+sess = tf.compat.v1.Session(config=configproto) 
+tf.compat.v1.keras.backend.set_session(sess)
 
 #Constants
 EPOCHS = 100
