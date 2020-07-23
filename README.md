@@ -1,8 +1,7 @@
-#auslan2text
-
+# auslan2text #
 App for translating Auslan to text
 
-##:bulb: TODO:
+## :bulb: TODO: ##
 
  - Look more into dynamic gesture recognition
    - LS-HAN (and Hierarchical Attention Networks in general)
@@ -16,7 +15,7 @@ App for translating Auslan to text
   - Implement data augmentation?
  - Make prettier GUI :sweat_smile: 
  
-#Arhitecture results#
+## Arhitecture results ##
 
 About 0.09% loss after 20 epochs (simple CNN with Batch Norm. and Max Pooling, static fingerspelling ASL).
  - Currently only works with static input, no recurrence or dynamics
