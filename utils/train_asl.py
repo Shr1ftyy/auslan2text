@@ -2,8 +2,9 @@
 # @author Syeam_Bin_Abdullah 
 
 # TODO: 
-#  - improve conversion loop for converting into one-hot vectors 
-#    (if possible) (49)
+#  - improve conversion loop for converting into one-hot vectors (if possible) 
+#  - implement data augmentation?
+#  - implement implement GAN to generate diverse, synthetic datasets? 
 
 # from tensorflow.keras.models 
 import sys
@@ -15,6 +16,7 @@ from tensorflow.keras.applications.mobilenet import MobileNet
 gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.3)
 sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 from tensorflow.keras import Sequential as Seq
+from keras.preprocessing.image import ImageDataGenerator
 from sklearn.preprocessing import LabelBinarizer
 import tensorflow.keras.layers as layers
 import matplotlib.pyplot as plt
@@ -23,11 +25,12 @@ import pandas as pd
 import cv2
 import argparse
 import os
+import seaborn as sns
 
 #Constants
-EPOCHS = 20
+EPOCHS = 200
 BATCH_SIZE = 32
-CLASSES = 26
+CLASSES = 25
 
 letters = "ABCDEFGHIKLMNOPQRSTUVWXY" # Js and Zs are not in this dataset, lol
 # letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -46,6 +49,12 @@ test = pd.read_csv("../train_data/asl/sign_mnist_test/sign_mnist_test.csv")
 y = test['label']
 
 print(train_df.head())
+
+# plt.figure(figsize = (10,10)) # Label Count
+# sns.set_style("darkgrid")
+# sns.countplot(train_df['label'])
+# plt.show()
+# sys.exit()
 
 y_train = train_df['label'].values
 print(y_train[:10])
@@ -84,6 +93,9 @@ y_test = np.array(one_k)
 x_train = train_df.values
 x_test = test_df.values
 
+
+# cv2.imwrite('./original.png', x_train[0].reshape(28,28))
+
 # Normalize the data
 x_train = x_train / 255.0
 x_test = x_test / 255.0
@@ -92,6 +104,7 @@ x_test = x_test / 255.0
 x_train = x_train.reshape(-1,28,28,1)
 x_test = x_test.reshape(-1,28,28,1)
 print(x_train.shape)
+
 
 # f, ax = plt.subplots(2,5) 
 # f.set_size_inches(10, 10)
@@ -135,6 +148,7 @@ model.add(layers.Dense(units = CLASSES , activation = 'softmax'))
 
 model.compile(optimizer='adam', loss='categorical_crossentropy')
 history = model.fit(x_train, y_train, epochs=EPOCHS, batch_size=BATCH_SIZE)
+model.save('test.h5')
 print(model.summary())
 print(history.history)
 

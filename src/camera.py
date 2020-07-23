@@ -10,6 +10,7 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 # from model import MobileNet
+from tensorflow.keras.models import load_model
 import numpy as np
 import time
 import cv2
@@ -26,9 +27,9 @@ class Camera(Image):
         # initialization of rectangle
         self.RECTX = 100 # x position of rectangle
         self.RECTY = 100 # y position of rectangle
-        self.RECTW = 300 # width of rectangle
-        self.RECTH = 300 # height of rectangle
-        self.RECTT = 1 # thickness of rectangle 
+        self.RECTW = 224 # width of rectangle
+        self.RECTH = 224 # height of rectangle
+        self.RECTT = 2 # thickness of rectangle 
         Clock.schedule_interval(self.update, 1.0 / fps)
 
     def update(self, dt):
@@ -63,7 +64,7 @@ class CamMenu(GridLayout):
         self.add_widget(self.label)
 
         self.button = Button(text="Take Photo", size_hint=(.5,.5))
-        self.button.bind(on_press=self.save)
+        self.button.bind(on_press=self.predict)
         self.add_widget(self.button)
         self.index = 2
 
@@ -78,18 +79,20 @@ class CamMenu(GridLayout):
         cv2.waitKey(0)
         key = input('')
         if key.lower().strip() == 's':
-            cv2.imwrite(f"./train_data/{self.index}.png",self.img)
+            cv2.imwrite(f"./{self.index}.png", self.img)
             self.index += 1
         else:
             pass
 
-    # def predict(self, instance):
-    #     self.img = self.cam.frame[self.cam.RECTY:self.cam.RECTH+self.cam.RECTY, 
-    #                          self.cam.RECTX:self.cam.RECTW+self.cam.RECTX]
+    def predict(self, instance):
+        self.img = self.cam.frame[self.cam.RECTY:self.cam.RECTH+self.cam.RECTY, 
+                             self.cam.RECTX:self.cam.RECTW+self.cam.RECTX]
 
-    #     pred = str(np.argmax(model.predict(np.array([self.img])/255.0)))
-    #     self.label.text = pred
-
+        pred = np.argmax(model.predict(np.expand_dims(np.array([cv2.resize(cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY), (28, 28))]), axis=3)/255.0))
+        cv2.imshow('-', cv2.resize(cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY), (28, 28))) # change for finalized release
+        cv2.waitKey(0)
+        self.label.text = alphabet[pred]
+ 
 
 
 class CamApp(App):
@@ -103,7 +106,9 @@ class CamApp(App):
 
 if __name__ == '__main__':
     global model
-    # alphabet="ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    # model = MobileNet(classes=26, idx="channels_last")
+    global alphabet
+    alphabet="ABCDEFGHIKLMNOPQRSTUVWXYZ"
+    # model = MobileNet(classes=26, idx=channels_last")
+    model = load_model('../utils/test.h5')
     # model.compile(optimizer='adam', loss="categorical_crossentropy")
     CamApp().run()
