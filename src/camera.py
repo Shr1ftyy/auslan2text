@@ -88,10 +88,16 @@ class CamMenu(GridLayout):
         self.img = self.cam.frame[self.cam.RECTY:self.cam.RECTH+self.cam.RECTY, 
                              self.cam.RECTX:self.cam.RECTW+self.cam.RECTX]
 
-        pred = np.argmax(model.predict(np.expand_dims(np.array([cv2.resize(cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY), (28, 28))]), axis=3)/255.0))
-        cv2.imshow('-', cv2.resize(cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY), (28, 28))) # change for finalized release
+        output = model.predict(np.expand_dims(np.array([cv2.resize(cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY), (28, 28))]), axis=3)/255.0)
+        pred = np.argmax(output)
+        # cv2.imshow('-', cv2.resize(cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY), (28, 28))) # change for finalized release
         cv2.waitKey(0)
-        self.label.text = alphabet[pred]
+        try:
+            print(output)
+            print(pred)
+            self.label.text = alphabet[pred-1]
+        except:
+            print(f'letter with index:{pred} does not exist in alphabet')
  
 
 
@@ -107,8 +113,9 @@ class CamApp(App):
 if __name__ == '__main__':
     global model
     global alphabet
-    alphabet="ABCDEFGHIKLMNOPQRSTUVWXYZ"
+    alphabet="ABCDEFGHIKLMNOPQRSTUVWXY"
+    print(len(alphabet))
     # model = MobileNet(classes=26, idx=channels_last")
-    model = load_model('../utils/test.h5')
+    model = load_model('../models/convnet200.h5')
     # model.compile(optimizer='adam', loss="categorical_crossentropy")
     CamApp().run()

@@ -28,6 +28,13 @@ approach.
   beneficial:
   https://www.researchgate.net/publication/335801178_One-shot_Learning_Hand_Gesture_Recognition_Based_on_Lightweight_3D_Convolutional_Neural_Networks_for_Portable_Applications_on_Mobile_Systems
 
+Looking into voice-text (will be used to translate speech/text into auslan)
+ - LIGHTWEIGHT AND EFFICIENT END-TO-END SPEECH RECOGNITION
+   USING LOW-RANK TRANSFORMER:
+   https://arxiv.org/pdf/1910.13923.pdf
+ - Attention Is All You Need:
+   https://arxiv.org/pdf/1706.03762.pdf
+
 ## Arhitecture results ##
 
 About 0.09% loss after 20 epochs (simple CNN with Batch Norm. and Max Pooling, static fingerspelling ASL).

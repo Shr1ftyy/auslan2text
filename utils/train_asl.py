@@ -7,23 +7,18 @@
 #  - implement implement GAN to generate diverse, synthetic datasets? 
 #  - Look more into LS-HAN 
 
-# from tensorflow.keras.models 
 import sys
 sys.path.append(r'../src')
-# from model import MobileNet
 import tensorflow as tf
-from tensorflow.keras.applications.mobilenet import MobileNet
-
-# gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.3)
-# sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
-configproto = tf.compat.v1.ConfigProto() 
-configproto.gpu_options.allow_growth = True
-sess = tf.compat.v1.Session(config=configproto) 
-tf.compat.v1.keras.backend.set_session(sess)
-
+gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
+sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
+# configproto = tf.compat.v1.ConfigProto() 
+# configproto.gpu_options.allow_growth = True
+# sess = tf.compat.v1.Session(config=configproto) 
+# tf.compat.v1.keras.backend.set_session(sess)
 from tensorflow.keras import Sequential as Seq
-from keras.preprocessing.image import ImageDataGenerator
-from sklearn.preprocessing import LabelBinarizer
+# from keras.preprocessing.image import ImageDataGenerator
+# from sklearn.preprocessing import LabelBinarizer
 import tensorflow.keras.layers as layers
 import matplotlib.pyplot as plt
 import numpy as np
@@ -34,7 +29,7 @@ import os
 import seaborn as sns
 
 #Constants
-EPOCHS = 20
+EPOCHS = 10
 BATCH_SIZE = 32
 CLASSES = 25
 
@@ -88,7 +83,7 @@ y_test = np.array(one_k)
 x_train = train_df.values
 x_test = test_df.values
 
-# cv2.imwrite('./original.png', x_train[0].reshape(28,28))
+cv2.imwrite('./original.png', x_train[0].reshape(28,28))
 
 # Normalize the data
 x_train = x_train / 255.0
@@ -143,7 +138,7 @@ model.add(layers.Dense(units = CLASSES , activation = 'softmax'))
 
 model.compile(optimizer='adam', loss='categorical_crossentropy')
 history = model.fit(x_train, y_train, epochs=EPOCHS, batch_size=BATCH_SIZE)
-model.save('models/convnet100.h5')
+model.save('../models/convnet200.h5')
 print(model.summary())
 print(history.history)
 
