@@ -1,0 +1,11 @@
+['_CheckpointFilename', '_MaybeDeleteOldCheckpoints', '_RecordLastCheckpoint', '__class__', '__delattr__', '__dict__'
+, '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__in
+it_subclass__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__
+setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_add_collection_def', '_allow_empty', '_buil
+d', '_build_eager', '_builder', '_check_saver_def', '_checkpoints_to_be_deleted', '_filename', '_is_built', '_is_empt
+y', '_keep_checkpoint_every_n_hours', '_last_checkpoints', '_max_to_keep', '_name', '_next_checkpoint_time', '_object
+_restore_saver', '_pad_step_number', '_reshape', '_restore_sequentially', '_save_relative_paths', '_sharded', '_tf_ap
+i_names', '_tf_api_names_v1', '_var_list', '_write_version', 'as_saver_def', 'build', 'export_meta_graph', 'from_prot
+o', 'last_checkpoints', 'recover_last_checkpoints', 'restore', 'save', 'saver_def', 'set_last_checkpoints', 'set_last
+_checkpoints_with_time', 'to_proto']
+
