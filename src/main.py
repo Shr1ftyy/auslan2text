@@ -1,8 +1,7 @@
 #!C:/Users/Syeam/AppData/Local/Programs/Python/Python37/python.exe
 # @author Syeam_Bin_Abdullah 
-
 from kivy.app import App
-from kivy.core.window import Window as Win
+# from kivy.core.window import Window as Win
 from kivy.uix.image import Image
 from kivy.clock import Clock
 from kivy.graphics.texture import Texture
@@ -56,7 +55,7 @@ class CamMenu(GridLayout):
         super().__init__(**kwargs)
         self.rows = 3 
         self.capture = cv2.VideoCapture(0)
-        print(Win.size[1])
+        # print(Win.size[1])
         self.cam = Camera(capture=self.capture, fps=30)
         self.add_widget(self.cam)
 
@@ -68,6 +67,7 @@ class CamMenu(GridLayout):
         self.add_widget(self.button)
         self.index = 2
 
+    # WAS USED AS A TESTING FUNCTION
     def save(self, instance):
         time.sleep(3)
         self.cam.update(None)

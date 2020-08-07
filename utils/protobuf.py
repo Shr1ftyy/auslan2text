@@ -4,6 +4,7 @@
 import os
 import numpy as np
 import tensorflow as tf
+from tensorflow.keras.models import load_model
 
 
 def freeze_session(session, keep_var_names=None, output_names=None, clear_devices=True):
@@ -34,10 +35,10 @@ def freeze_session(session, keep_var_names=None, output_names=None, clear_device
             session, input_graph_def, output_names, freeze_var_names)
         return frozen_graph
 
-model = tf.keras.models.Sequential()
-model.load_weights("../weights/mobnet.h5")
+model = load_model('../models/convnet200.h5')
+# model.load_weights("../weights/mobnet.h5")
 
-model.compile(loss='mean_squared_error', optimizer='adam', metrics=['binary_accuracy'])
+# model.compile(loss='mean_squared_error', optimizer='adam', metrics=['binary_accuracy'])
 
 # inputs:  ['dense_input']
 print('inputs: ', [input.op.name for input in model.inputs])
@@ -48,5 +49,5 @@ print('outputs: ', [output.op.name for output in model.outputs])
 # model.save('./mobnet.h5')
 
 frozen_graph = freeze_session(tf.keras.backend.get_session(), output_names=[out.op.name for out in model.outputs])
-tf.train.write_graph(frozen_graph, './', 'xor.pbtxt', as_text=True)
-tf.train.write_graph(frozen_graph, './', 'xor.pb', as_text=False)
+tf.train.write_graph(frozen_graph, './', 'model.pbtxt', as_text=True)
+tf.train.write_graph(frozen_graph, './', 'model.pb', as_text=False)
