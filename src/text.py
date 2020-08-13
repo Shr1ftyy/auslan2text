@@ -13,12 +13,14 @@ from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
 from kivy.uix.label import Label
 
+W = 200
+H = 150
 images = []
 alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ "
 
 for i in range(0,26):
-    img = cv2.imread(f'../testing/letters/{i}.png') 
-    ret = cv2.resize(img, (200, 150))
+    img = cv2.imread(f'../letters/{i}.png') 
+    ret = cv2.resize(img, (W, H))
     images.append(ret)
 
 print(np.shape(alphabet))
@@ -29,54 +31,68 @@ class LetterImg(Image):
     Displays translated Auslan (fingerspelling)
     """
     def __init__(self, fps=2, **kwargs):
-        super(Camera, self).__init__(**kwargs)
+        super(LetterImg, self).__init__(**kwargs)
         Clock.schedule_interval(self.update, 1.0 / fps)
 
     # def update(self, dt):
         # self.ret, self.frame = self.capture.read()
-    def update(self, img=None, dt):
+    def update(self, dt, img=None):
         if img is not None:
             self.frame = img
             # convert it to texture
-            self.output = self.frame.
-            buf = self.output.tostring()
-            image_texture = Texture.create(
-                size=(self.frame.shape[1], self.frame.shape[0]), colorfmt='bgr')
+        else: 
+            self.frame = np.zeros((H, W))
 
-            image_texture.blit_buffer(buf, colorfmt='bgr', bufferfmt='ubyte')
-            # display image from the texture
-            self.texture = image_texture
-            time.sleep(0.5)
+        self.output = self.frame
+        buf = self.output.tostring()
+        image_texture = Texture.create(
+            size=(self.frame.shape[1], self.frame.shape[0]), colorfmt='bgr')
+
+        image_texture.blit_buffer(buf, colorfmt='bgr', bufferfmt='ubyte')
+        # display image from the texture
+        self.texture = image_texture
+        time.sleep(0.5)
 
 #    def readimg():
 
 
-class TranslatorWin(GridLayout):
+class TranslateWin(GridLayout):
 
     def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.rows = 4
 
-        self.textbox = TextInput()
-        self.button.bind(on_press=self.translate)
-        self.add_widget(self.button)
-
-        self.start = start(text="Start", size_hint=(.5,.5))
-        self.add_widget(self.start)
-        self.rest = rest(text="Reset", size_hint=(.5,.5))
-        self.add_widget(self.rest)
-
         self.letter_display = LetterImg()
+        self.add_widget(self.letter_display)
 
-    def translate(self, sent): # function for translating sentence input into Auslan fingerspelling
+        self.textbox = TextInput()
+        self.add_widget(self.textbox)
+
+        self.start = Button(text="Start", size_hint=(.5,.5))
+        self.start.bind(on_press=self.translate)
+        self.add_widget(self.start)
+
+        self.reset = Button(text="Reset", size_hint=(.5,.5))
+        self.add_widget(self.reset)
+
+    def translate(self, instance): # function for translating sentence input into Auslan fingerspelling
+        sent = self.textbox.text
+        if sent is None:
+            self.letter_display.update(img=None)
         for i in sent:
             if i.upper() not in alphabet:
                 print(f'Invalid input: {i}')
 
             else: 
-                self.letter_display.update(images[alphabet.index(i.upper())])
+                self.letter_display.update(img=images[alphabet.index(i.upper())])
 
+class TranApp(App):
+    def build(self):
+        self.menu = TranslateWin()
+ 
 
-
+if __name__ == '__main__':
+    TranApp().run()
 
 
 
