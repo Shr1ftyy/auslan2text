@@ -28,7 +28,7 @@ Looking into voice-text (will be used to translate speech/text into auslan)
  - [Attention Is All You Need](https://arxiv.org/pdf/1706.03762.pdf)
  - [SPEECH RECOGNITION WITH DEEP RECURRENT NEURAL NETWORKS](https://www.cs.toronto.edu/~fritz/absps/RNN13.pdf)
  - [Deep Speech: Scaling up end-to-end speech recognition](https://arxiv.org/pdf/1412.5567.pdf)
- - [TinySpeech: AttentionCondensersforDeepSpeech RecognitionNeuralNetworksonEdgeDevices](https://arxiv.org/pdf/2008.04245.pdf)
+ - [TinySpeech: Attention Condensers fo rDeepSpeech Recognition Neural Networks on Edge Devices](https://arxiv.org/pdf/2008.04245.pdf)
 
 ## Arhitecture results ##
 
