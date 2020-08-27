@@ -15,7 +15,7 @@ App for translating Auslan to text
  - Make prettier GUI :sweat_smile: 
  
 ## :mag: Research ##
-Just some existing methods for gesture recognition and stuff - some are possible
+Just some existing methods for gesture recognition - some are possible
 candidates for implementation or for inspiration for developing different
 approach.
 - [Video-based Sign Language Recognition without Temporal Segmentation](https://arxiv.org/pdf/1801.10111.pdf)
