@@ -2,7 +2,6 @@
 # @author Syeam_Bin_Abdullah 
 import numpy as np
 import cv2
-import time
 from kivy.app import App
 from kivy.core.window import Window as Win
 from kivy.uix.image import Image
@@ -23,6 +22,9 @@ for i in range(0,26):
     ret = cv2.resize(img, (W, H))
     images.append(ret)
 
+cv2.imshow('Preview', images[0])
+cv2.waitKey(0)
+
 print(np.shape(alphabet))
 print(np.shape(alphabet[0]))
 
@@ -30,15 +32,30 @@ class LetterImg(Image):
     """
     Displays translated Auslan (fingerspelling)
     """
-    def __init__(self, fps=2, **kwargs):
+    def __init__(self, **kwargs):
         super(LetterImg, self).__init__(**kwargs)
-        Clock.schedule_interval(self.update, 1.0 / fps)
+        self.index = 0
+        Clock.schedule_interval(self.update, 1.0)
 
     # def update(self, dt):
         # self.ret, self.frame = self.capture.read()
-    def update(self, dt, img=None):
+    def update(self, dt=None, img=None, sent=None):
+        if self.reset:
+            sent = None
+            self.index = 0
+            self.reset = False
+
+        if sent is not None:
+            letter = ''.join(sent[self.index].upper().strip().split(' '))
+            print(letter)
+            letteridx = alphabet.index()
+            img = images[letteridx]
+
+        print('called update, img: {img!=None}')
         if img is not None:
-            self.frame = img
+            self.frame = cv2.flip(img, 0)
+            # img = np.reshape(img, (H, W))
+            print(f'Shape: {img.shape}')
             # convert it to texture
         else: 
             self.frame = np.zeros((H, W))
@@ -51,7 +68,11 @@ class LetterImg(Image):
         image_texture.blit_buffer(buf, colorfmt='bgr', bufferfmt='ubyte')
         # display image from the texture
         self.texture = image_texture
-        time.sleep(0.5)
+        print('done updating texture')
+        self.index += 1
+
+    def reset(self):
+        self.reset = True
 
 #    def readimg():
 
@@ -72,11 +93,14 @@ class TranslateWin(GridLayout):
         self.start.bind(on_press=self.translate)
         self.add_widget(self.start)
 
-        self.reset = Button(text="Reset", size_hint=(.5,.5))
-        self.add_widget(self.reset)
+        self.resetbutton = Button(text="Reset", size_hint=(.5,.5))
+        self.add_widget(self.resetbutton)
+        self.resetbutton.bind(on_press=self.letter_display.reset)
 
     def translate(self, instance): # function for translating sentence input into Auslan fingerspelling
+        print('called translate')
         sent = self.textbox.text
+        print(sent)
         if sent is None:
             self.letter_display.update(img=None)
         for i in sent:
@@ -86,13 +110,14 @@ class TranslateWin(GridLayout):
             else: 
                 self.letter_display.update(img=images[alphabet.index(i.upper())])
 
-class TranApp(App):
+class TranslateApp(App):
     def build(self):
         self.menu = TranslateWin()
+        return self.menu
  
 
 if __name__ == '__main__':
-    TranApp().run()
+    TranslateApp().run()
 
 
 
