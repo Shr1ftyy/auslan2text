@@ -29,95 +29,153 @@ print(np.shape(alphabet))
 print(np.shape(alphabet[0]))
 
 class LetterImg(Image):
-    """
-    Displays translated Auslan (fingerspelling)
-    """
-    def __init__(self, **kwargs):
-        super(LetterImg, self).__init__(**kwargs)
-        self.index = 0
-        Clock.schedule_interval(self.update, 1.0)
+  """
+  Displays translated Auslan (fingerspelling)
+  """
+  def __init__(self, imgs=None, **kwargs):
+      super(LetterImg, self).__init__(**kwargs)
+      self.index = 0
+      self.rst = False
+      self.frame = np.zeros((H, W))
+      self.imgs = imgs
+      self.words = None
+      Clock.schedule_interval(self.update, 0.75)
 
-    # def update(self, dt):
-        # self.ret, self.frame = self.capture.read()
-    def update(self, dt=None, img=None, sent=None):
-        if self.reset:
-            sent = None
-            self.index = 0
-            self.reset = False
+  # def update(self, dt):
+      # self.ret, self.frame = self.capture.read()
+  def insert(self, keywords):
+    self.words = keywords
 
-        if sent is not None:
-            letter = ''.join(sent[self.index].upper().strip().split(' '))
-            print(letter)
-            letteridx = alphabet.index()
-            img = images[letteridx]
+  # def update(self, dt=None, imgs=None, sent=None):
+  def update(self, dt=None):
+    if self.rst:
+      # sent = None
+      self.words = None
+      self.index = 0
+      self.frame = np.zeros((H, W))
+      self.canvas.clear()
+      self.rst = False
 
-        print('called update, img: {img!=None}')
-        if img is not None:
-            self.frame = cv2.flip(img, 0)
-            # img = np.reshape(img, (H, W))
-            print(f'Shape: {img.shape}')
-            # convert it to texture
-        else: 
-            self.frame = np.zeros((H, W))
+      # SHIT CODE
+      # if sent is not None:
+      #   letter = ''.join(sent[self.index].upper().strip().split(' '))
+      #   print(letter)
+      #   letteridx = alphabet.index(letter)
+      #   img = imgs[letteridx]
+      #   print(f'called update')
 
-        self.output = self.frame
-        buf = self.output.tostring()
-        image_texture = Texture.create(
-            size=(self.frame.shape[1], self.frame.shape[0]), colorfmt='bgr')
+    # if self.words is not None:
+    #   letter = ''.join(words[self.index].upper().strip().split(' '))
+    #   print(letter)
+    #   letteridx = alphabet.index(letter)
+    #   img = self.imgs[letteridx]
+    #   print(img)
+    #   print(f'called update')
 
-        image_texture.blit_buffer(buf, colorfmt='bgr', bufferfmt='ubyte')
-        # display image from the texture
-        self.texture = image_texture
-        print('done updating texture')
-        self.index += 1
+    # if self.imgs is not None:
+    #   self.frame = cv2.flip(img, 0)
+    #   # img = np.reshape(img, (H, W))
+    #   print(f'Shape: {img.shape}')
+    # else:
+    #   self.frame = np.zeros((H, W))
 
-    def reset(self):
-        self.reset = True
+    if self.words is not None:
+      letter = ''.join(self.words[self.index].upper().strip().split(' '))
+      print(letter)
+      img = self.imgs[alphabet.index(letter)]
+      print(img)
+    else: 
+      print('no words...')
+      img = np.zeros((H, W))
+      self.index -=1
+
+    if self.imgs is not None:
+      self.frame = cv2.flip(img, 0)
+      # img = np.reshape(img, (H, W))
+      # print(f'Shape: {img.shape}')
+    else:
+      self.frame = np.zeros((H, W))
+
+    # convert it to texture
+    self.output = self.frame
+    buf = self.output.tostring()
+    image_texture = Texture.create(
+        size=(self.frame.shape[1], self.frame.shape[0]), colorfmt='bgr')
+
+    image_texture.blit_buffer(buf, colorfmt='bgr', bufferfmt='ubyte')
+    # display image from the texture
+    self.texture = image_texture
+    print('done updating texture')
+    self.index += 1
+
+  def reset(self, instance):
+    self.rst = True
 
 #    def readimg():
 
 
 class TranslateWin(GridLayout):
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.rows = 4
+  def __init__(self, **kwargs):
+      super().__init__(**kwargs)
+      self.rows = 4
 
-        self.letter_display = LetterImg()
-        self.add_widget(self.letter_display)
+      self.letter_display = LetterImg(imgs=images)
+      self.add_widget(self.letter_display)
 
-        self.textbox = TextInput()
-        self.add_widget(self.textbox)
+      self.textbox = TextInput()
+      self.add_widget(self.textbox)
 
-        self.start = Button(text="Start", size_hint=(.5,.5))
-        self.start.bind(on_press=self.translate)
-        self.add_widget(self.start)
+      self.start = Button(text="Start", size_hint=(.5,.5))
+      self.start.bind(on_press=self.translate)
+      self.add_widget(self.start)
 
-        self.resetbutton = Button(text="Reset", size_hint=(.5,.5))
-        self.add_widget(self.resetbutton)
-        self.resetbutton.bind(on_press=self.letter_display.reset)
+      self.resetbutton = Button(text="Reset", size_hint=(.5,.5))
+      self.add_widget(self.resetbutton)
+      self.resetbutton.bind(on_press=self.letter_display.reset)
 
-    def translate(self, instance): # function for translating sentence input into Auslan fingerspelling
-        print('called translate')
-        sent = self.textbox.text
-        print(sent)
-        if sent is None:
-            self.letter_display.update(img=None)
-        for i in sent:
-            if i.upper() not in alphabet:
-                print(f'Invalid input: {i}')
+  # def translate(self, instance): # function for translating sentence input into Auslan fingerspelling
+  #     print('called translate')
+  #     sent = ''.join(self.textbox.text.strip().split(' '))
+  #     print(sent)
+  #     if sent is not None:
+  #       self.letter_display.update(imgs=None)
+  #     for i in sent:
+  #       if i.upper() not in alphabet:
+  #           print(f'Invalid input: {i}')
 
-            else: 
-                self.letter_display.update(img=images[alphabet.index(i.upper())])
+  #     # self.letter_display.update(imgs=images[alphabet.index(i.upper())])
+  #     # self.letter_display.update(imgs=images)
+  #     print('sent images')
+  #     self.letter_display.insert(sent)
+  #     print('called insert')
+
+  def translate(self, instance): # function for translating sentence input into Auslan fingerspelling
+      print('called translate')
+      sent = ''.join(self.textbox.text.strip().split(' '))
+      print(sent)
+
+      for i in sent:
+        if i.upper() not in alphabet:
+            print(f'Invalid input: {i}')
+
+      if sent is not None:
+        print('sent images')
+        self.letter_display.insert(sent)
+        print('called insert')
+
+
+      # self.letter_display.update(imgs=images[alphabet.index(i.upper())])
+      # self.letter_display.update(imgs=images)
 
 class TranslateApp(App):
-    def build(self):
-        self.menu = TranslateWin()
-        return self.menu
- 
+  def build(self):
+    self.menu = TranslateWin()
+    return self.menu
+
 
 if __name__ == '__main__':
-    TranslateApp().run()
+  TranslateApp().run()
 
 
 
