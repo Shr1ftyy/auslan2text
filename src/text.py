@@ -56,29 +56,6 @@ class LetterImg(Image):
       self.canvas.clear()
       self.rst = False
 
-      # SHIT CODE
-      # if sent is not None:
-      #   letter = ''.join(sent[self.index].upper().strip().split(' '))
-      #   print(letter)
-      #   letteridx = alphabet.index(letter)
-      #   img = imgs[letteridx]
-      #   print(f'called update')
-
-    # if self.words is not None:
-    #   letter = ''.join(words[self.index].upper().strip().split(' '))
-    #   print(letter)
-    #   letteridx = alphabet.index(letter)
-    #   img = self.imgs[letteridx]
-    #   print(img)
-    #   print(f'called update')
-
-    # if self.imgs is not None:
-    #   self.frame = cv2.flip(img, 0)
-    #   # img = np.reshape(img, (H, W))
-    #   print(f'Shape: {img.shape}')
-    # else:
-    #   self.frame = np.zeros((H, W))
-
     if self.words is not None:
       letter = ''.join(self.words[self.index].upper().strip().split(' '))
       print(letter)
@@ -134,22 +111,6 @@ class TranslateWin(GridLayout):
       self.add_widget(self.resetbutton)
       self.resetbutton.bind(on_press=self.letter_display.reset)
 
-  # def translate(self, instance): # function for translating sentence input into Auslan fingerspelling
-  #     print('called translate')
-  #     sent = ''.join(self.textbox.text.strip().split(' '))
-  #     print(sent)
-  #     if sent is not None:
-  #       self.letter_display.update(imgs=None)
-  #     for i in sent:
-  #       if i.upper() not in alphabet:
-  #           print(f'Invalid input: {i}')
-
-  #     # self.letter_display.update(imgs=images[alphabet.index(i.upper())])
-  #     # self.letter_display.update(imgs=images)
-  #     print('sent images')
-  #     self.letter_display.insert(sent)
-  #     print('called insert')
-
   def translate(self, instance): # function for translating sentence input into Auslan fingerspelling
       print('called translate')
       sent = ''.join(self.textbox.text.strip().split(' '))
@@ -165,9 +126,6 @@ class TranslateWin(GridLayout):
         print('called insert')
 
 
-      # self.letter_display.update(imgs=images[alphabet.index(i.upper())])
-      # self.letter_display.update(imgs=images)
-
 class TranslateApp(App):
   def build(self):
     self.menu = TranslateWin()
@@ -176,22 +134,3 @@ class TranslateApp(App):
 
 if __name__ == '__main__':
   TranslateApp().run()
-
-
-
-# for i in range (0,26):
-#     length = 103
-#     width = 84
-#     gap = i+16
-#     try:
-#         if i > 0:
-#             alphabet.append(img[i*width+gap:i*width+gap+width, i*length+gap:i*length+gap+length,:])
-#         else:
-#             alphabet.append(img[:width, i:length,:])
-
-#     except:
-#         print('failed to add image %d'%(i))
-
-# cv2.imshow('_', alphabet[3])
-# print(np.shape(alphabet))
-# cv2.waitKey(0)
