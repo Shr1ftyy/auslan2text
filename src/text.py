@@ -53,7 +53,6 @@ class LetterImg(Image):
       self.words = None
       self.index = 0
       self.frame = np.zeros((H, W))
-      self.canvas.clear()
       self.rst = False
 
     if self.words is not None:
