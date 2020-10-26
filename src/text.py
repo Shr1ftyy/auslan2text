@@ -11,6 +11,7 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
 from kivy.uix.label import Label
+from kivy.uix.slider import Slider
 
 W = 200
 H = 150
@@ -22,8 +23,8 @@ for i in range(0,26):
     ret = cv2.resize(img, (W, H))
     images.append(ret)
 
-cv2.imshow('Preview', images[0])
-cv2.waitKey(0)
+# cv2.imshow('Preview', images[0])
+# cv2.waitKey(0)
 
 print(np.shape(alphabet))
 print(np.shape(alphabet[0]))
@@ -39,11 +40,13 @@ class LetterImg(Image):
       self.frame = np.zeros((H, W))
       self.imgs = imgs
       self.words = None
-      Clock.schedule_interval(self.update, 0.75)
+      self.upclock = Clock.schedule_interval(self.update, 1)
 
   # def update(self, dt):
       # self.ret, self.frame = self.capture.read()
-  def insert(self, keywords):
+  def insert(self, keywords, speed):
+    self.upclock.cancel()
+    self.upclock = Clock.schedule_interval(self.update, 1/(speed))
     self.words = keywords
 
   # def update(self, dt=None, imgs=None, sent=None):
@@ -73,8 +76,7 @@ class LetterImg(Image):
       self.frame = np.zeros((H, W))
 
     # convert it to texture
-    self.output = self.frame
-    buf = self.output.tostring()
+    buf = self.frame.tostring()
     image_texture = Texture.create(
         size=(self.frame.shape[1], self.frame.shape[0]), colorfmt='bgr')
 
@@ -83,6 +85,12 @@ class LetterImg(Image):
     self.texture = image_texture
     print('done updating texture')
     self.index += 1
+
+    try:
+      if self.index >= len(self.words):
+        self.reset(instance=None)
+    except:
+      pass
 
   def reset(self, instance):
     self.rst = True
@@ -110,6 +118,18 @@ class TranslateWin(GridLayout):
       self.add_widget(self.resetbutton)
       self.resetbutton.bind(on_press=self.letter_display.reset)
 
+      self.slider = Slider(min=0.1, max=10, value=1, size_hint=(1,.25))
+      self.add_widget(self.slider) 
+      self.slider.bind(value=self.sliderChange)
+
+      self.valuelabel = Label(text=f"Speed: {round(self.slider.value, 1)}", size_hint=(1,.25))
+      self.add_widget(self.valuelabel) 
+
+
+  def sliderChange(self, value, instance):
+    self.valuelabel.text=f"Speed: {round(self.slider.value, 1)}"
+
+
   def translate(self, instance): # function for translating sentence input into Auslan fingerspelling
       print('called translate')
       sent = ''.join(self.textbox.text.strip().split(' '))
@@ -119,9 +139,9 @@ class TranslateWin(GridLayout):
         if i.upper() not in alphabet:
             print(f'Invalid input: {i}')
 
-      if sent is not None:
+      if sent is not None and sent!='':
         print('sent images')
-        self.letter_display.insert(sent)
+        self.letter_display.insert(sent, self.slider.value)
         print('called insert')
 
 
